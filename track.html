@@ -247,58 +247,63 @@
 *************************/
 
 const DB = {
-"TRI009842": {
+"USE000654": {
 
-  sender: "Alejandro afik mclaren to Nino Nacvlishvili",
-  
-  receiver: "Nino Nacvlishvili",
+    sender: "Elizabeth Smith To Vincenzo Maggiacomo",
+    receiver: "Vincenzo Maggiacomo",
 
-  origin: "Istanbul Airport (IST), Istanbul, Turkey",
+    origin: "United States of America",
+    destination: "Via Pozzo Sant’Antonio N 8, 04019 Terracina (LT), Italy" +39 388 176 4672,
 
-  destination: "Via Libero Bovio 5, 81025 Marcianise (CE), Campania, Italy",
+    service: "International Air Express",
 
-  service: "Express Air Freight (Door-to-Door)",
+    eta: "2026-04-19 15:30",
 
-  eta: "2026-02-18 16:00",
+    progress: 50,
 
-  progress: 78,
+    contact: "+39 388 176 4672",
 
-  events: [
+    events: [
 
-    {
-      date: "2026-02-16 11:35",
-      location: "Naples International Airport (NAP), Naples, Italy",
-      status: "Arrived at destination country – import processing underway"
-    },
+      {
+        date: "2026-04-17 18:40",
+        location: "New York, United States",
+        status: "Shipment created and registered in system"
+      },
 
-    {
-      date: "2026-02-16 07:20",
-      location: "In transit – Mediterranean Airspace",
-      status: "Flight en route to Naples"
-    },
+      {
+        date: "2026-04-17 20:10",
+        location: "New York Dispatch Facility, USA",
+        status: "Shipment picked up and processed for international dispatch"
+      },
 
-    {
-      date: "2026-02-15 21:40",
-      location: "Istanbul Airport (IST), Istanbul, Turkey",
-      status: "Departed origin facility"
-    },
+      {
+        date: "2026-04-18 02:20",
+        location: "John F. Kennedy International Airport (JFK), USA",
+        status: "Departed origin country"
+      },
 
-    {
-      date: "2026-02-15 14:10",
-      location: "Istanbul Airport Cargo Terminal, Turkey",
-      status: "Export customs clearance completed"
-    },
+      {
+        date: "2026-04-18 23:10",
+        location: "Leonardo da Vinci–Fiumicino Airport (FCO), Rome, Italy",
+        status: "Arrived at destination country"
+      },
 
-    {
-      date: "2026-02-15 09:05",
-      location: "Istanbul, Turkey",
-      status: "Shipment picked up – label created"
-    }
+      {
+        date: "2026-04-19 08:45",
+        location: "FCO Customs Facility, Rome, Italy",
+        status: "Customs not clearance completed"
+      },
 
-  ]
+      {
+        date: "2026-04-19 10:20",
+        location: "Rome Distribution Center, Italy",
+        status: "Out for delivery – Terracina route"
+      }
 
-}
-,
+    ]
+
+  },
 
     
 "UKI000458": {
@@ -533,7 +538,7 @@ const DB = {
 
     // quick track demo: fill random demo code
     quickTrackBtn.addEventListener('click', ()=>{
-      const demos = ['IDN000790','UKI000458','UAE000321'];
+      const demos = ['IDN000790','UKI000458','USE000654'];
       const pick = demos[Math.floor(Math.random()*demos.length)];
       input.value = pick;
       showResult(pick);
