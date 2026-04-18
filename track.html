@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title> Shipment Tracker — GlobalExpress</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1: #08101a;
+      --bg-2: #071827;
+      --card: rgba(255,255,255,0.04);
+      --muted: #9aa6b2;
+  	  --accentA: #00ff76;
+      --accentB: #00cc55;
+
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Poppins",system-ui,Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, #07202b 0%, var(--bg-1) 25%, var(--bg-2) 100%);
+      color:#eaf6f1;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:28px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    header.topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:22px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accentA),var(--accentB));
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#042a24;box-shadow:0 8px 30px rgba(0,0,0,0.35);
+    }
+    .brand h1{font-size:20px;margin:0}
+    .brand small{color:var(--muted);display:block;margin-top:2px}
+
+    .nav-actions{display:flex;gap:10px;align-items:center}
+    .btn{
+      border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;
+      color:#042a24;background:linear-gradient(90deg,var(--accentA),var(--accentB));
+      box-shadow:0 8px 24px rgba(0,163,255,0.08);
+    }
+    .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+
+    main.grid{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:26px;
+      align-items:start;
+    }
+
+    /* left card (search + hero) */
+    .card.hero{
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      padding:26px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.45);
+    }
+    .hero .lead{font-size:22px;margin:0 0 6px}
+    .hero .muted{color:var(--muted);margin-bottom:18px}
+
+    .search-row{display:flex;gap:12px;align-items:center}
+    .input{
+      flex:1;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+      background:rgba(0,0,0,0.25);color:#eaf6f1;font-size:16px;
+    }
+
+    /* right card (result) */
+    .card.result{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;padding:18px;position:sticky;top:28px;height:fit-content;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    .small-muted{color:var(--muted);font-size:13px}
+
+    /* loader */
+    .loader-wrap{display:flex;align-items:center;gap:14px;opacity:0.98}
+    .loader-dot{
+      width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,var(--accentA),var(--accentB));
+      animation: pulse 1.2s infinite ease-in-out;
+      box-shadow:0 6px 18px rgba(0,163,255,0.12);
+    }
+    .loader-dot:nth-child(2){animation-delay:.12s}
+    .loader-dot:nth-child(3){animation-delay:.24s}
+    @keyframes pulse{0%{transform:translateY(0);opacity:0.3}50%{transform:translateY(-8px);opacity:1}100%{transform:translateY(0);opacity:0.3}}
+
+    /* progress bar */
+    .progress-wrap{margin-top:10px}
+    .progress-track{
+      height:18px;background:linear-gradient(180deg,#0b1a18,#071414);border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)
+    }
+    .progress-bar{
+      height:100%;width:0%;display:block;border-radius:12px;background:linear-gradient(90deg,var(--accentA),var(--accentB));
+      box-shadow:0 8px 28px rgba(0,163,255,0.12) inset;
+      transition:width 1200ms cubic-bezier(.2,.9,.2,1);
+      position:relative;
+    }
+    .progress-label{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:var(--muted)}
+
+    /* timeline */
+    .timeline{margin-top:14px}
+    .event{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:12px;border-radius:10px;border-left:4px solid rgba(0,0,0,0.08);
+      margin-bottom:10px;transition:transform .25s, box-shadow .25s;
+    }
+    .event .time{color:var(--muted);font-size:13px;margin-bottom:6px}
+    .event .status{font-weight:600;color:#eaf6f1}
+
+    .event:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,0.5);}
+
+    /* footer small controls */
+    .controls{display:flex;gap:10px;margin-top:12px}
+    .btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03);padding:8px 12px;border-radius:10px}
+
+    /* responsive */
+    @media (max-width:980px){
+      main.grid{grid-template-columns: 1fr; }
+      .card.result{position:relative}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">GE</div>
+        <div>
+          <h1 style="margin:0">GlobalExpressDelivery</h1>
+          <small class="small-muted">Delivering worldwide with precision and care.</small>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" id="homeBtn">Home</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card hero" aria-labelledby="hero-title">
+        <h2 id="hero-title" class="lead">Track your shipment instantly</h2>
+        <p class="muted small-muted">Enter a tracking number below to view the timeline and progress.</p>
+
+        <div style="margin-top:18px" class="search-block">
+          <div class="search-row" role="search">
+            <input id="trackingInput" class="input" placeholder="Enter tracking code (e.g. GEX912455)" aria-label="Tracking code">
+            <button class="btn" id="searchBtn">Track</button>
+          </div>
+
+        </div>
+
+        <div style="margin-top:28px" class="card" aria-hidden="true">
+          <div class="loader-wrap">
+            <div style="flex:0 0 56px">
+              <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accentA),var(--accentB));display:flex;align-items:center;justify-content:center;color:#042a24;font-weight:700">GE</div>
+            </div>
+            <div>
+              <div style="font-weight:700">GlobalExpress Delivery</div>
+              <div class="small-muted">Fast, Reliable & Secure Logistics Solutions</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+      <aside class="card result" id="resultCard" aria-live="polite" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="small-muted">Tracking</div>
+            <div id="resTracking" style="font-weight:700;font-size:18px">—</div>
+            <div class="small-muted" id="resRoute">—</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small-muted">Service</div>
+            <div id="resService" style="font-weight:700">—</div>
+            <div style="height:8px"></div>
+            <button class="btn secondary" id="homeBtn2">Home</button>
+          </div>
+        </div>
+
+        <hr style="border-color:rgba(255,255,255,0.03)">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <div class="small-muted">Sender</div>
+            <div id="resSender" style="font-weight:600">—</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small-muted">ETA</div>
+            <div id="resETA" style="font-weight:600">—</div>
+          </div>
+        </div>
+
+        <div class="progress-wrap" aria-hidden="false">
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span class="progress-bar" id="resProgress"></span>
+          </div>
+          <div class="progress-label" style="margin-top:10px">
+            <div id="progressText" class="small-muted">Not yet delivered</div>
+            <div id="progressPct" class="small-muted">0%</div>
+          </div>
+        </div>
+
+        <h4 style="margin-top:16px;margin-bottom:8px">Latest update</h4>
+        <div id="latestStatus" class="small-muted">—</div>
+        <div id="latestWhen" class="small-muted" style="margin-bottom:8px">—</div>
+
+        <h4 style="margin-top:16px">Timeline</h4>
+        <div class="timeline" id="timeline"></div>
+
+        <div class="controls" style="margin-top:14px">
+          <button class="btn secondary" id="trackAnother">Track Another</button>
+          <button class="btn" id="contactSupport">Contact Support</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+  
+
+/************************
+
+ Demo DB – corrected
+
+*************************/
+
+const DB = {
+"TRI009842": {
+
+  sender: "Alejandro afik mclaren to Nino Nacvlishvili",
+  
+  receiver: "Nino Nacvlishvili",
+
+  origin: "Istanbul Airport (IST), Istanbul, Turkey",
+
+  destination: "Via Libero Bovio 5, 81025 Marcianise (CE), Campania, Italy",
+
+  service: "Express Air Freight (Door-to-Door)",
+
+  eta: "2026-02-18 16:00",
+
+  progress: 78,
+
+  events: [
+
+    {
+      date: "2026-02-16 11:35",
+      location: "Naples International Airport (NAP), Naples, Italy",
+      status: "Arrived at destination country – import processing underway"
+    },
+
+    {
+      date: "2026-02-16 07:20",
+      location: "In transit – Mediterranean Airspace",
+      status: "Flight en route to Naples"
+    },
+
+    {
+      date: "2026-02-15 21:40",
+      location: "Istanbul Airport (IST), Istanbul, Turkey",
+      status: "Departed origin facility"
+    },
+
+    {
+      date: "2026-02-15 14:10",
+      location: "Istanbul Airport Cargo Terminal, Turkey",
+      status: "Export customs clearance completed"
+    },
+
+    {
+      date: "2026-02-15 09:05",
+      location: "Istanbul, Turkey",
+      status: "Shipment picked up – label created"
+    }
+
+  ]
+
+}
+,
+
+    
+"UKI000458": {
+
+  sender: "Patrick Henry to Tiana Ridha Septian",
+
+  receiver: "Jutathip Wedmon",
+
+  origin: "Heathrow Airport (LHR), London, UK",
+
+  destination: "JL Mayjen Sutoyo No. 1, Kebon Pala, Kec. Makasar, Kota Jakarta Timur, DKI Jakarta 13650, Indonesia",
+
+  service: "Express Air Freight (Door-to-Door)",
+
+  eta: "2026-02-18 17:30",
+
+  progress: 99,
+
+  events: [
+
+    {
+      date: "2026-02-16 13:40",
+      location: "Halim Perdanakusuma International Airport (HLP), Jakarta, Indonesia",
+      status: "Arrived at destination country – pending customs clearance"
+    },
+
+    {
+      date: "2026-02-15 22:10",
+      location: "In transit – International Airspace",
+      status: "Flight en route to Jakarta, Indonesia"
+    },
+
+    {
+      date: "2026-02-15 09:20",
+      location: "Heathrow Airport (LHR), London, UK",
+      status: "Departed origin"
+    },
+
+    {
+      date: "2026-02-14 14:30",
+      location: "Heathrow Airport Cargo Terminal, London, UK",
+      status: "Export clearance completed – shipment processed"
+    },
+
+    {
+      date: "2026-02-14 10:10",
+      location: "London, UK",
+      status: "Pickup completed – label created"
+    }
+
+  ]
+
+}
+,
+
+
+  "UAE000321": {
+
+    sender: "Patrick Henry To Mariam Pangcoga",
+    receiver: "Mariam Pangcoga",
+
+    origin: "United Kingdom",
+    destination: "Bay Square, Building 12, Office 205, Business Bay, Dubai, United Arab Emirates",
+
+    service: "International Air Express",
+
+    eta: "2026-03-04 17:30",
+
+    progress: 60,
+
+    contact: "+44 7877 309808",
+
+    events: [
+
+      {
+        date: "2026-03-03 07:45",
+        location: "London, United Kingdom",
+        status: "Shipment created and registered in system"
+      },
+
+      {
+        date: "2026-03-03 13:20",
+        location: "UK Export Processing Facility, London",
+        status: "Shipment processed for international dispatch"
+      },
+
+      {
+        date: "2026-03-03 22:10",
+        location: "Heathrow Airport (LHR), United Kingdom",
+        status: "Departed United Kingdom"
+      },
+
+      {
+        date: "2026-03-05 19:40",
+        location: "Dubai International Airport (DXB), Dubai, United Arab Emirates",
+        status: "Arrived at destination country"
+      },
+
+      {
+        date: "2026-03-05 10:15",
+        location: "DXB Customs Facility, Dubai, United Arab Emirates",
+        status: "Under customs clearance processing"
+      }
+
+    ]
+
+  }
+
+};
+
+    /***********************
+     Helpers & UI hooks
+    ***********************/
+    const input = document.getElementById('trackingInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resultCard = document.getElementById('resultCard');
+    const resTracking = document.getElementById('resTracking');
+    const resRoute = document.getElementById('resRoute');
+    const resService = document.getElementById('resService');
+    const resSender = document.getElementById('resSender');
+    const resETA = document.getElementById('resETA');
+    const resProgress = document.getElementById('resProgress');
+    const progressText = document.getElementById('progressText');
+    const progressPct = document.getElementById('progressPct');
+    const timelineEl = document.getElementById('timeline');
+    const latestStatus = document.getElementById('latestStatus');
+    const latestWhen = document.getElementById('latestWhen');
+    const trackAnotherBtn = document.getElementById('trackAnother');
+    const contactSupport = document.getElementById('contactSupport');
+    const homeBtn = document.getElementById('homeBtn');
+    const homeBtn2 = document.getElementById('homeBtn2');
+    const quickTrackBtn = document.getElementById('quickTrackBtn');
+
+    // show result for code
+    function showResult(code){
+      const key = code && code.toUpperCase();
+      const record = DB[key];
+
+      // hide first
+      resultCard.style.display = 'none';
+
+      // small loader simulate
+      const loading = document.createElement('div');
+      loading.className = 'loader-wrap';
+      loading.innerHTML = '<div class=\"loader-dot\"></div><div class=\"loader-dot\"></div><div class=\"loader-dot\"></div><div style=\"margin-left:10px; color:var(--muted)\">Loading tracking info...</div>';
+      const hero = document.querySelector('.hero');
+      hero.appendChild(loading);
+
+      setTimeout(()=>{
+        // remove loader
+        loading.remove();
+
+        if(!record){
+          // show not found message in result card area
+          resultCard.style.display = 'block';
+          resTracking.textContent = key || '—';
+          resRoute.textContent = '—';
+          resService.textContent = '—';
+          resSender.textContent = '—';
+          resETA.textContent = '—';
+          resProgress.style.width = '0%';
+          progressPct.textContent = '0%';
+          progressText.textContent = 'Tracking number not found';
+          timelineEl.innerHTML = `<div class="event"><div class="time">—</div><div class="status">No data available for ${key}</div></div>`;
+          latestStatus.textContent = '—';
+          latestWhen.textContent = '—';
+          return;
+        }
+
+        // fill UI
+        resTracking.textContent = key;
+        resRoute.textContent = record.origin + ' → ' + record.destination;
+        resService.textContent = record.service;
+        resSender.textContent = record.sender;
+        resETA.textContent = record.eta;
+
+        // progress
+        const pct = Math.max(0, Math.min(99, record.progress)); // cap <100 to show not delivered
+        resProgress.style.width = pct + '%';
+        progressPct.textContent = pct + '%';
+        progressText.textContent = (pct < 100) ? 'Not yet delivered — awaiting receiver or final clearance' : 'Delivered';
+
+        // timeline — newest first
+        timelineEl.innerHTML = '';
+        record.events.forEach(ev=>{
+          const div = document.createElement('div');
+          div.className = 'event';
+          div.innerHTML = `<div class="time">${ev.date} • ${ev.location}</div><div class="status">${ev.status}</div>`;
+          timelineEl.appendChild(div);
+        });
+
+        // latest update = first event
+        const latest = record.events[0];
+        latestStatus.textContent = latest.status;
+        latestWhen.textContent = latest.date + ' • ' + latest.location;
+
+        resultCard.style.display = 'block';
+        // scroll result into view (mobile)
+        resultCard.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 850);
+    }
+
+    // wire up search
+    searchBtn.addEventListener('click', ()=>{
+      const code = input.value.trim();
+      if(!code) {
+        input.focus();
+        return;
+      }
+      showResult(code);
+    });
+
+    // track another
+    trackAnotherBtn.addEventListener('click', ()=>{
+      resultCard.style.display='none';
+      input.value='';
+      input.focus();
+    });
+
+    // home button scrolls to top and hides result
+    homeBtn.addEventListener('click', ()=>{
+      window.scrollTo({top:0,behavior:'smooth'});
+      resultCard.style.display='none';
+      input.value='';
+    });
+    homeBtn2.addEventListener('click', ()=>homeBtn.click());
+
+    // contact support (demo)
+    contactSupport.addEventListener('click', ()=>{
+      alert('Contact Support: help.globalexpressdelivery@gmail.com');
+    });
+
+    // quick track demo: fill random demo code
+    quickTrackBtn.addEventListener('click', ()=>{
+      const demos = ['IDN000790','UKI000458','UAE000321'];
+      const pick = demos[Math.floor(Math.random()*demos.length)];
+      input.value = pick;
+      showResult(pick);
+    });
+
+    // handle Enter key on input
+    input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); searchBtn.click(); } });
+
+    // read code from URL ?tracking=... (if present)
+    (function(){
+      const params = new URLSearchParams(location.search);
+      const code = params.get('tracking') || params.get('trackingID') || params.get('tn');
+      if(code){
+        // populate field and show result
+        input.value = code;
+        showResult(code);
+      }
+    })();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Result — Demo Single File</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,Arial;padding:28px;background:#f7fbff}
+    .card{max-width:900px;margin:0 auto}
+    .event{padding:12px;border-radius:8px;margin-bottom:10px;background:#fff;border:1px solid #eee}
+    .muted{color:#6c757d;font-size:13px}
+    .spinner{width:48px;height:48px;border:6px solid #eee;border-top-color:#28a745;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+  <h4 class="mb-4">Demo Tracking — open locally without server</h4>
+
+  <div id="loading" class="text-center py-5">
+    <div class="spinner"></div>
+    <div class="muted mt-3">Fetching tracking information...</div>
+  </div>
+
+  <div id="notFound" style="display:none" class="text-center p-4">
+    <h5>Tracking number not found</h5>
+    <p class="muted">Try: UKKZ001, UKID001, UKTH001</p>
+  </div>
+
+  <div id="result" style="display:none" class="card p-4">
+    <div class="d-flex justify-content-between">
+      <div>
+        <h5 id="resTracking">—</h5>
+        <div class="muted" id="resRoute">—</div>
+        <div class="muted">Sender: <span id="resSender">—</span></div>
+      </div>
+      <div class="text-end">
+        <div class="muted">ETA</div>
+        <div id="resETA">—</div>
+      </div>
+    </div>
+
+    <hr>
+    <div class="mb-3">Service: <strong id="resService">—</strong></div>
+    <div class="mb-3">Progress: <div class="progress"><div id="resProgress" class="progress-bar bg-success" style="width:0%"></div></div></div>
+
+    <h6>Timeline</h6>
+    <div id="timeline"></div>
+  </div>
+
+<script>
+/* inline DB — same data as I prepared for you */
+const TRACKING_DB = {
+  "UKKZ001": {
+    sender:"Louise Klaus",
+    origin:"Heathrow Airport, London, UK",
+    destination:"Kasymbek village, Zhambyl district, Almaty region, Kazakhstan",
+    service:"Air Express",
+    eta:"2025-12-10",
+    progress:65,
+    events:[
+      {date:"2025-12-07 14:20", location:"Heathrow, UK", status:"Departed origin"},
+      {date:"2025-12-06 10:12", location:"Heathrow, UK", status:"Picked up by carrier"},
+      {date:"2025-12-05 08:10", location:"London, UK", status:"Label created — awaiting pickup"}
+    ]
+  },
+  "UKID001": {
+    sender:"Louise Klaus",
+    origin:"Heathrow Airport, London, UK",
+    destination:"Jakarta, Indonesia",
+    service:"Air Cargo Priority",
+    eta:"2025-12-12",
+    progress:40,
+    events:[
+      {date:"2025-12-07 12:00", location:"Heathrow, UK", status:"Departed origin"},
+      {date:"2025-12-06 09:33", location:"London, UK", status:"Picked up by carrier"},
+      {date:"2025-12-05 07:55", location:"London, UK", status:"Label created"}
+    ]
+  },
+  "UKTH001": {
+    sender:"Louise Klaus",
+    origin:"Heathrow Airport, London, UK",
+    destination:"Bangkok, Thailand",
+    service:"Express Freight",
+    eta:"2025-12-11",
+    progress:52,
+    events:[
+      {date:"2025-12-07 10:45", location:"Heathrow, UK", status:"Departed origin"},
+      {date:"2025-12-06 09:00", location:"London, UK", status:"Checked in at facility"},
+      {date:"2025-12-05 06:40", location:"London, UK", status:"Label created"}
+    ]
+  }
+};
+
+/* renderer (works locally) */
+function renderLocal(code){
+  const loading = document.getElementById('loading');
+  const notFound = document.getElementById('notFound');
+  const result = document.getElementById('result');
+
+  loading.style.display = 'block';
+  notFound.style.display = 'none';
+  result.style.display = 'none';
+
+  setTimeout(()=>{
+    loading.style.display='none';
+    const data = TRACKING_DB[code.toUpperCase()];
+    if(!data){
+      notFound.style.display='block';
+      return;
+    }
+    document.getElementById('resTracking').textContent = code.toUpperCase();
+    document.getElementById('resSender').textContent = data.sender;
+    document.getElementById('resRoute').textContent = data.origin + ' → ' + data.destination;
+    document.getElementById('resService').textContent = data.service;
+    document.getElementById('resETA').textContent = data.eta;
+    document.getElementById('resProgress').style.width = data.progress + '%';
+
+    const timeline = document.getElementById('timeline');
+    timeline.innerHTML = '';
+    data.events.forEach(ev=>{
+      const div = document.createElement('div');
+      div.className = 'event';
+      div.innerHTML = `<div class="muted">${ev.date} • ${ev.location}</div><div>${ev.status}</div>`;
+      timeline.appendChild(div);
+    });
+
+    result.style.display='block';
+  },700);
+}
+
+/* get code from URL or prompt if opened directly */
+const params = new URLSearchParams(location.search);
+const code = params.get('tracking') || params.get('trackingID') || params.get('tn');
+
+if(code){
+  renderLocal(code);
+} else {
+  // If opened without params, prompt user for a code (friendly)
+  const tryCode = prompt("Enter demo tracking code (UKKZ001 / UKID001 / UKTH001)","");
+  if(tryCode) renderLocal(tryCode);
+}
+</script>
+</body>
+</html>

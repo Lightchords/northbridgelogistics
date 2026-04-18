@@ -1,0 +1,31 @@
+{
+  "GEX123456": {
+    "tracking": "GEX123456",
+    "service": "Air Express",
+    "origin": "Lagos, NG",
+    "destination": "London, UK",
+    "eta": "2025-10-22",
+    "progress": 80,
+    "events": [
+      {"time":"2025-10-14 09:02","status":"Label created — awaiting pickup","location":"Lagos, NG","notes":""},
+      {"time":"2025-10-14 14:20","status":"Picked up by carrier","location":"Lagos, NG","notes":"Driver: A. Musa"},
+      {"time":"2025-10-15 08:40","status":"In transit (flight)","location":"Lagos Intl Airport","notes":"Flight GEX580"},
+      {"time":"2025-10-18 12:15","status":"Arrived at destination hub","location":"Heathrow, UK","notes":""},
+      {"time":"2025-10-20 07:30","status":"Out for delivery","location":"London, UK","notes":"Local courier 77"}
+    ]
+  },
+
+  "GEX000001": {
+    "tracking": "GEX000001",
+    "service": "Sea Cargo",
+    "origin": "Shanghai, CN",
+    "destination": "New York, US",
+    "eta": "2025-11-05",
+    "progress": 45,
+    "events": [
+      {"time":"2025-09-25 10:00","status":"Container loaded on vessel","location":"Shanghai Port","notes":""},
+      {"time":"2025-09-27 18:00","status":"Departed port","location":"Shanghai Port","notes":""},
+      {"time":"2025-10-12 09:00","status":"In transit (ocean)","location":"Atlantic Ocean","notes":""}
+    ]
+  }
+}
